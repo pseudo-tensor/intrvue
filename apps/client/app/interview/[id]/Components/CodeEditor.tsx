@@ -22,7 +22,7 @@ export default function CodeEditor() {
     const codeMirrorOptions = {
       doc: valueRef.current,
       lineNumbers: true,
-      lineWrapping: true,
+      lineWrapping: true, // use a state for this
       autoCloseBrackets: true,
       cursorScrollMargin: 48,
       indentUnit: 2,
