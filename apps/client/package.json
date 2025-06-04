@@ -15,6 +15,7 @@
     "@codemirror/state": "^6.5.2",
     "@codemirror/view": "^6.37.1",
     "@repo/ui": "workspace:*",
+    "@repo/store": "workspace:*",
     "codemirror": "^6.0.1",
     "next": "^15.3.0",
     "prosemirror-example-setup": "^1.2.3",

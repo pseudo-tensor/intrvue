@@ -4,12 +4,16 @@ import { EditorState } from '@codemirror/state'
 import { defaultKeymap } from '@codemirror/commands';
 import { basicSetup, EditorView } from 'codemirror';
 import { useRef, useEffect, useState } from 'react';
+import { useCodeStore } from '@repo/store/providers/codeStoreProvider';
 
 export default function CodeEditor() {
-  const [code, setCode] = useState('');
+  const { code, setCode } = useCodeStore(
+    (state) => state,
+  )
+
+// const [code, setCode] = useState(''); // switch this out for an actual state
   const editor = useRef<any>(null);
   const valueRef = useRef<string>(code);
-
   useEffect(() => {
     valueRef.current = code;
   }, [code]);
@@ -17,7 +21,9 @@ export default function CodeEditor() {
   useEffect(() => {
     // CodeMirror Extension: update code in store
     const onUpdate = EditorView.updateListener.of((view) => {
+      if (view.docChanged) {
         setCode(view.state.doc.toString());
+      }
     });
     const codeMirrorOptions = {
       doc: valueRef.current,
