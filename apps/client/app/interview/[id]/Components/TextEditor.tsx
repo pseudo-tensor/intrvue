@@ -2,45 +2,53 @@ import "prosemirror-view/style/prosemirror.css";
 import "prosemirror-example-setup/style/style.css";
 import "prosemirror-menu/style/menu.css";
 
-import { EditorState } from "prosemirror-state"
-import { EditorView } from 'prosemirror-view';
-import { Schema } from "prosemirror-model"
-import { schema } from "prosemirror-schema-basic"
-import { addListNodes } from "prosemirror-schema-list"
-import { exampleSetup } from "prosemirror-example-setup"
-import { useEffect, useRef, useState } from "react"
+import { useEffect, useRef } from "react";
+import { useTextStore } from '@repo/store/providers/textStoreProvider';
+import { Schema } from "prosemirror-model";
+import { schema as baseSchema } from "prosemirror-schema-basic";
+import { addListNodes } from "prosemirror-schema-list";
+import { EditorState } from "prosemirror-state";
+import { EditorView } from "prosemirror-view";
+import { exampleSetup } from "prosemirror-example-setup";
 
-// Mix the nodes from prosemirror-schema-list into the basic schema to
-// create a schema with list support.
 const mySchema = new Schema({
-  nodes: addListNodes(schema.spec.nodes, "paragraph block*", "block"),
-  marks: schema.spec.marks
-})
+  nodes: addListNodes(baseSchema.spec.nodes, "paragraph block*", "block"),
+  marks: baseSchema.spec.marks,
+});
 
 export default function TextEditor() {
-  const editor = useRef<any>(null);
+  const docJSON = useTextStore((s) => s.docJSON);
+  const setDocJSON = useTextStore((s) => s.setDocJSON);
+
+  const editorRef = useRef<HTMLDivElement | null>(null);
+  const viewRef = useRef<EditorView | null>(null);
 
   useEffect(() => {
-    const proseMirrorOptions = {
-      doc: mySchema.topNodeType.createAndFill()!,
-      plugins: exampleSetup({schema: mySchema})
-    };
+    const state = EditorState.create({
+      doc: mySchema.nodeFromJSON(docJSON),
+      plugins: exampleSetup({ schema: mySchema }),
+    });
 
-    const startState = EditorState.create(proseMirrorOptions);
-
-    const view = new EditorView(editor.current, {
-      state: startState,
-      dispatchTransaction(transaction) {
-        const newState = view.state.apply(transaction);
+    const view = new EditorView(editorRef.current, {
+      state,
+      dispatchTransaction(tr) {
+        const newState = view.state.apply(tr);
         view.updateState(newState);
+        setDocJSON(newState.doc.toJSON());
       },
     });
 
-    return () => view.destroy();
+    viewRef.current = view;
 
-  },[])
+    return () => {
+      view.destroy();
+      viewRef.current = null;
+    };
+  }, [docJSON]);
 
   return (
-    <div ref={editor}/>
-  )
+    <div>
+      <div ref={editorRef} />
+    </div>
+  );
 }

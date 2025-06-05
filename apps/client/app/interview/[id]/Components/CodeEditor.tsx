@@ -1,4 +1,3 @@
-'use client'
 import { keymap } from '@codemirror/view';
 import { EditorState } from '@codemirror/state'
 import { defaultKeymap } from '@codemirror/commands';
@@ -51,7 +50,7 @@ export default function CodeEditor() {
     return () => {
       view.destroy();
     };
-  }, []);
+  }, [code]);
 
   return (
     <div style={{width: 'auto'}} ref={editor} />
