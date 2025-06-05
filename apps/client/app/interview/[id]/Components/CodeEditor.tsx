@@ -1,18 +1,25 @@
-import { keymap } from '@codemirror/view';
+import { drawSelection, keymap } from '@codemirror/view';
 import { EditorState } from '@codemirror/state'
 import { defaultKeymap } from '@codemirror/commands';
 import { basicSetup, EditorView } from 'codemirror';
 import { useRef, useEffect, useState } from 'react';
 import { useCodeStore } from '@repo/store/providers/codeStoreProvider';
+import * as Y from 'yjs';
+import { WebsocketProvider } from 'y-websocket';
+import { yCollab } from 'y-codemirror.next';
+import { javascript } from '@codemirror/lang-javascript';
+
+const ydoc = new Y.Doc();
+const provider = new WebsocketProvider('wss://demos.yjs.dev', 'ws/codemirror-demo-2025-06-05', ydoc);
 
 export default function CodeEditor() {
   const { code, setCode } = useCodeStore(
     (state) => state,
   )
-
-// const [code, setCode] = useState(''); // switch this out for an actual state
   const editor = useRef<any>(null);
   const valueRef = useRef<string>(code);
+  const ytext = ydoc.getText('codemirror');
+
   useEffect(() => {
     valueRef.current = code;
   }, [code]);
@@ -27,6 +34,7 @@ export default function CodeEditor() {
     const codeMirrorOptions = {
       doc: valueRef.current,
       lineNumbers: true,
+      drawSelection: true,
       lineWrapping: true, // use a state for this
       autoCloseBrackets: true,
       cursorScrollMargin: 48,
@@ -35,9 +43,12 @@ export default function CodeEditor() {
       styleActiveLine: true,
       viewportMargin: 99,
       extensions: [
+        javascript(),
         basicSetup,
         keymap.of(defaultKeymap),
         onUpdate,
+        yCollab(ytext, provider.awareness),
+        drawSelection()
       ],
     };
 
@@ -50,7 +61,7 @@ export default function CodeEditor() {
     return () => {
       view.destroy();
     };
-  }, [code]);
+  }, []);
 
   return (
     <div style={{width: 'auto'}} ref={editor} />

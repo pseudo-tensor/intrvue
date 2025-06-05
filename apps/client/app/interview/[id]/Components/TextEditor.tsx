@@ -44,7 +44,7 @@ export default function TextEditor() {
       view.destroy();
       viewRef.current = null;
     };
-  }, [docJSON]);
+  }, []);
 
   return (
     <div>
