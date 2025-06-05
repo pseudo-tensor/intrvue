@@ -11,6 +11,11 @@ import { EditorState } from "prosemirror-state";
 import { EditorView } from "prosemirror-view";
 import { exampleSetup } from "prosemirror-example-setup";
 
+import * as Y from 'yjs';
+import { WebsocketProvider } from 'y-websocket';
+import { ySyncPlugin, yCursorPlugin } from 'y-prosemirror';
+
+
 const mySchema = new Schema({
   nodes: addListNodes(baseSchema.spec.nodes, "paragraph block*", "block"),
   marks: baseSchema.spec.marks,
@@ -21,29 +26,45 @@ export default function TextEditor() {
   const setDocJSON = useTextStore((s) => s.setDocJSON);
 
   const editorRef = useRef<HTMLDivElement | null>(null);
+  const ydocRef = useRef<Y.Doc | null>(null);
   const viewRef = useRef<EditorView | null>(null);
 
   useEffect(() => {
+    const ydoc = new Y.Doc();
+    ydocRef.current = ydoc;
+
+    // Connect to public y-websocket demo server or your own
+    const provider = new WebsocketProvider('wss://demos.yjs.dev', 'ws/prosemirror-demo-2025-06-06', ydoc);
+    const yXmlFragment = ydoc.getXmlFragment('prosemirror');
+
     const state = EditorState.create({
       doc: mySchema.nodeFromJSON(docJSON),
-      plugins: exampleSetup({ schema: mySchema }),
+      plugins: [
+        ySyncPlugin(yXmlFragment),
+        yCursorPlugin(provider.awareness),
+        ...exampleSetup({ schema: mySchema })
+      ]
     });
 
     const view = new EditorView(editorRef.current, {
       state,
       dispatchTransaction(tr) {
-        const newState = view.state.apply(tr);
-        view.updateState(newState);
-        setDocJSON(newState.doc.toJSON());
-      },
+        if (viewRef.current) {
+          const newState = viewRef.current.state.apply(tr);
+          view.updateState(newState);
+          setDocJSON(newState.doc.toJSON());
+        }
+     },
     });
 
     viewRef.current = view;
 
     return () => {
       view.destroy();
-      viewRef.current = null;
+      provider.disconnect();
+      ydoc.destroy();
     };
+
   }, []);
 
   return (
