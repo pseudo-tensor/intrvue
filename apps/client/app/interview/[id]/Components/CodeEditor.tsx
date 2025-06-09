@@ -1,8 +1,10 @@
+// TODO: separate out ws connection stuff to lib/hooks
+
 import { drawSelection, keymap } from '@codemirror/view';
 import { EditorState } from '@codemirror/state'
 import { defaultKeymap } from '@codemirror/commands';
 import { basicSetup, EditorView } from 'codemirror';
-import { useRef, useEffect, useState } from 'react';
+import { useRef, useEffect } from 'react';
 import { useCodeStore } from '@repo/store/providers/codeStoreProvider';
 import * as Y from 'yjs';
 import { WebsocketProvider } from 'y-websocket';
@@ -10,7 +12,7 @@ import { yCollab } from 'y-codemirror.next';
 import { javascript } from '@codemirror/lang-javascript';
 
 const ydoc = new Y.Doc();
-const provider = new WebsocketProvider('wss://demos.yjs.dev', 'ws/codemirror-demo-2025-06-05', ydoc);
+const provider = new WebsocketProvider('wss://demos.yjs.dev', 'ws/codemirror-demo-2025-06-06', ydoc);
 
 export default function CodeEditor() {
   const { code, setCode } = useCodeStore(
@@ -19,6 +21,7 @@ export default function CodeEditor() {
   const editor = useRef<any>(null);
   const valueRef = useRef<string>(code);
   const ytext = ydoc.getText('codemirror');
+  const languages = [javascript()];
 
   useEffect(() => {
     valueRef.current = code;
@@ -43,7 +46,7 @@ export default function CodeEditor() {
       styleActiveLine: true,
       viewportMargin: 99,
       extensions: [
-        javascript(),
+        [...languages],
         basicSetup,
         keymap.of(defaultKeymap),
         onUpdate,

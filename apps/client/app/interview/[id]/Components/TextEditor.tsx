@@ -1,3 +1,5 @@
+// TODO: separate out ws connection stuff to lib/hooks
+
 import "prosemirror-view/style/prosemirror.css";
 import "prosemirror-example-setup/style/style.css";
 import "prosemirror-menu/style/menu.css";
@@ -10,11 +12,9 @@ import { addListNodes } from "prosemirror-schema-list";
 import { EditorState } from "prosemirror-state";
 import { EditorView } from "prosemirror-view";
 import { exampleSetup } from "prosemirror-example-setup";
-
 import * as Y from 'yjs';
 import { WebsocketProvider } from 'y-websocket';
 import { ySyncPlugin, yCursorPlugin } from 'y-prosemirror';
-
 
 const mySchema = new Schema({
   nodes: addListNodes(baseSchema.spec.nodes, "paragraph block*", "block"),
