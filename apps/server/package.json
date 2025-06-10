@@ -4,6 +4,7 @@
   "private": true,
   "scripts": {
     "build": "pnpm clean && tsc",
+    "dev": "nodemon",
     "clean": "rimraf dist/",
     "prisma:migrate:dev": "prisma migrate dev --schema='./src/prisma/schema.prisma' --name",
     "prisma:generate": "prisma generate --schema='./src/prisma/schema.prisma'"
@@ -21,8 +22,11 @@
   "devDependencies": {
     "@repo/eslint-config": "workspace:*",
     "@repo/typescript-config": "workspace:*",
+    "@types/node": "^22.15.3",
     "eslint": "^9.26.0",
+    "nodemon": "^3.1.10",
     "rimraf": "^6.0.1",
+    "ts-node": "^10.9.2",
     "typescript": "5.8.2"
   }
 }

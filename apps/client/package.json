@@ -18,7 +18,8 @@
     "@repo/store": "workspace:*",
     "@repo/ui": "workspace:*",
     "codemirror": "^6.0.1",
-    "next": "^15.3.0",
+    "next": "^15.3.3",
+    "next-auth": "^4.24.11",
     "prosemirror-commands": "^1.7.1",
     "prosemirror-example-setup": "^1.2.3",
     "prosemirror-keymap": "^1.2.3",
@@ -27,7 +28,7 @@
     "prosemirror-schema-basic": "^1.2.4",
     "prosemirror-schema-list": "^1.5.1",
     "prosemirror-state": "^1.4.3",
-    "prosemirror-view": "^1.39.3",
+    "prosemirror-view": "^1.40.0",
     "react": "^19.1.0",
     "react-dom": "^19.1.0",
     "y-codemirror.next": "^0.3.5",
@@ -39,10 +40,10 @@
   "devDependencies": {
     "@repo/eslint-config": "workspace:*",
     "@repo/typescript-config": "workspace:*",
-    "@types/node": "^22.15.3",
+    "@types/node": "^22.15.31",
     "@types/react": "19.1.0",
     "@types/react-dom": "19.1.1",
-    "eslint": "^9.26.0",
+    "eslint": "^9.28.0",
     "typescript": "5.8.2"
   }
 }
