@@ -13,6 +13,7 @@
       "dependsOn": ["^check-types"]
     },
     "dev": {
+      "with": ["server#dev"],
       "cache": false,
       "persistent": true
     }

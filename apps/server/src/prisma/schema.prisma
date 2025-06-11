@@ -18,7 +18,7 @@ model User {
   email                 String     @unique
   username              String     @unique
   name                  String
-
+  password              String
   hosted_sessions        Session[]  @relation("HostedSessions")
   participated_sessions  Session[]  @relation("ParticipatedSessions")
 }
