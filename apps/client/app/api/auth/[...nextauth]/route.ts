@@ -1,27 +1,49 @@
+import axios from 'axios';
 import NextAuth from 'next-auth';
 import CredentialsProvider from "next-auth/providers/credentials";
+import { userAuthTsType, userAuthZodType, userDetailsTsType } from '@repo/types/userTypes';
+
+const userCredentials = {
+  username: { label: "Username", type: "text", placeholder: "username" },
+  password: { label: "Password", type: "password", placeholder: "password"}
+}
+
+const credentialsProvider = CredentialsProvider({
+  name: "Credentials",
+  credentials: userCredentials,
+  async authorize(credentials, req) {
+    const payload = userAuthZodType.safeParse({
+      username: credentials?.username,
+      password: credentials?.password
+    });
+    if (payload.success) {
+      const user = await fetchUserDetails(payload.data);
+      return user;
+    } else throw Error("invalid login details");
+  }
+})
+
 const authOptions = {
   providers: [
-    CredentialsProvider({
-      name: "Credentials",
-      credentials: {
-        username: { label: "Username", type: "text", placeholder: "jsmith" },
-        password: { label: "Password", type: "password" }
-      },
-      async authorize(credentials, req) {
-        const user = { id: "1", name: "J Smith", email: "jsmith@example.com" }
-        return user
-      }
-    })
+    credentialsProvider
   ],
   pages: {
     signIn: '/sign-in',
-    signOut: '/auth/signout',
+    signOut: '/signout',
     error: '/auth/error', // Error code passed in query string as ?error=
-    verifyRequest: '/auth/verify-request', // (used for check email message)
-    newUser: '/auth/new-user' // New users will be directed here on first sign in (leave the property out if not of interest)
+    newUser: '/sign-up'
   }
 }
-const handler = NextAuth(authOptions);
 
+const fetchUserDetails = async (payload: userAuthTsType): Promise<null | userDetailsTsType> => {
+  const url = process.env.NEXTAUTH_BEURL?.concat("auth/signup");
+  if (!url) throw Error("url not specified in .env");
+  console.log(url);
+  const requestResult = await axios.post(url, payload);
+  if (requestResult.status == 200) return requestResult.data;
+  else if (requestResult.status == 204) return null;
+  else throw Error("Internal Server Error");
+}
+
+const handler = NextAuth(authOptions);
 export { handler as GET, handler as POST};
