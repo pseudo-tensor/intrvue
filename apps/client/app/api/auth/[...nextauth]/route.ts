@@ -1,31 +1,167 @@
 import axios from 'axios';
-import NextAuth from 'next-auth';
+import NextAuth, { EventCallbacks } from 'next-auth';
 import CredentialsProvider from "next-auth/providers/credentials";
-import { userAuthTsType, userAuthZodType, userDetailsTsType } from '@repo/types/userTypes';
+import { userAuthTsType, userAuthZodType } from '@repo/types/userTypes';
+import { authResponse } from '@repo/types/restEnums';
+import { cookies } from "next/headers";
 
-const userCredentials = {
+axios.defaults.withCredentials = true;
+
+const userSignInCredentials = {
   username: { label: "Username", type: "text", placeholder: "username" },
   password: { label: "Password", type: "password", placeholder: "password"}
 }
 
-const credentialsProvider = CredentialsProvider({
-  name: "Credentials",
-  credentials: userCredentials,
+const userSignUpCredentials = {
+  username: { label: "Username", type: "text", placeholder: "username" },
+  password: { label: "Password", type: "password", placeholder: "password"},
+  name: { label: "Name", type: "text", placeholder: "name"},
+  email: { label: "Email", type: "text", placeholder: "user@org.domain" }
+}
+
+const tokenSignInProvider = CredentialsProvider({
+  id: "token-req",
+  name: "Sign In Token",
+  credentials: {},
+
+  async authorize(credentials, req) {
+    let user;
+    user = await fetchUserId();
+    if (user) {
+      return user.data;
+    }
+
+    user = await refreshAccessToken();
+    if (user) {
+      return user.data;
+    }
+    return null;
+  }
+})
+
+
+const signInProvider = CredentialsProvider({
+  id: "sign-in-req",
+  name: "Sign In Credentials",
+  credentials: userSignInCredentials,
+
   async authorize(credentials, req) {
     const payload = userAuthZodType.safeParse({
       username: credentials?.username,
       password: credentials?.password
     });
-    if (payload.success) {
-      const user = await fetchUserDetails(payload.data);
-      return user;
-    } else throw Error("invalid login details");
+    if (!payload.success) throw Error("invalid login details");
+
+    const user = await fetchUserIdLegacy(payload.data);
+    if (user.status != 200) {
+      if (!user.data.enum) throw Error("Backend Issues");
+
+      if (user.data.enum == authResponse.BAD_REQUEST) throw Error("Bad Request");
+
+      if (user.data.enum == authResponse.USER_NOT_FOUND) {
+        // go to signup page
+        return null;
+      }
+
+      if (user.data.enum == authResponse.PASSWORD_INCORRECT) {
+        // give warning for wrong password
+        return null;
+      }
+    }
+
+    const setCookieHeader = user.headers['set-cookie'];
+    if (setCookieHeader) {
+      const cookieStore = await cookies()
+      const cookieStrings = Array.isArray(setCookieHeader) ? setCookieHeader : [setCookieHeader]
+
+      // Extract accessToken
+      const accessTokenString = cookieStrings.find(str => str.startsWith('accessToken='))
+      if (accessTokenString) {
+        const match = accessTokenString.match(/accessToken=([^;]+)/)
+        if (match && match[1]) {
+          cookieStore.set('accessToken', match[1].trim(), {
+            httpOnly: true,
+            path: '/',
+            maxAge: 60 * 60 * 24,
+            sameSite: 'lax',
+          })
+        }
+      }
+
+      // Extract refreshToken
+      const refreshTokenString = cookieStrings.find(str => str.startsWith('refreshToken='))
+      if (refreshTokenString) {
+        const match = refreshTokenString.match(/refreshToken=([^;]+)/)
+        if (match && match[1]) {
+          cookieStore.set('refreshToken', match[1].trim(), {
+            httpOnly: true,
+            path: '/',
+            maxAge: 60 * 60 * 24,
+            sameSite: 'lax',
+          })
+        }
+      }
+    }
+    return user.data;
   }
 })
 
-const authOptions = {
+const signUpProvider = CredentialsProvider({
+  id: "sign-up-req",
+  name: "Sign Up Credentials",
+  credentials: userSignUpCredentials,
+
+  async authorize(credentials, req) {
+    const payload = userAuthZodType.safeParse({
+      username: credentials?.username,
+      password: credentials?.password,
+      name: credentials?.name,
+      email: credentials?.email
+    });
+    if (!payload.success) return null;
+      const user = await createUser(payload.data);
+      if (user.status != 200) return null; // add some better handling of reseieved enum cases here
+
+      const setCookieHeader = user.headers['set-cookie'];
+      if (setCookieHeader) {
+        const cookieStore = await cookies()
+        const cookieStrings = Array.isArray(setCookieHeader) ? setCookieHeader : [setCookieHeader]
+
+        // Extract accessToken
+        const accessTokenString = cookieStrings.find(str => str.startsWith('accessToken='))
+        if (accessTokenString) {
+          const match = accessTokenString.match(/accessToken=([^;]+)/)
+          if (match && match[1]) {
+            cookieStore.set('accessToken', match[1].trim(), {
+              httpOnly: true,
+              path: '/',
+              maxAge: 60 * 60 * 24,
+            })
+          }
+        }
+
+        // Extract refreshToken
+        const refreshTokenString = cookieStrings.find(str => str.startsWith('refreshToken='))
+        if (refreshTokenString) {
+          const match = refreshTokenString.match(/refreshToken=([^;]+)/)
+          if (match && match[1]) {
+            cookieStore.set('refreshToken', match[1].trim(), {
+              httpOnly: true,
+              path: '/',
+              maxAge: 60 * 60 * 24,
+            })
+          }
+        }
+      }
+      return user.data;
+    }
+})
+
+const nextAuthOptions = {
   providers: [
-    credentialsProvider
+    tokenSignInProvider,
+    signInProvider,
+    signUpProvider
   ],
   pages: {
     signIn: '/sign-in',
@@ -35,15 +171,57 @@ const authOptions = {
   }
 }
 
-const fetchUserDetails = async (payload: userAuthTsType): Promise<null | userDetailsTsType> => {
-  const url = process.env.NEXTAUTH_BEURL?.concat("auth/signup");
+const fetchUserId = async () => {
+  const cookieStore = await cookies();
+  const accessToken = cookieStore.get('accessToken');
+  const refreshToken = cookieStore.get('refreshToken');
+  const url = process.env.NEXTAUTH_BEURL?.concat("auth/signin/token");
   if (!url) throw Error("url not specified in .env");
-  console.log(url);
-  const requestResult = await axios.post(url, payload);
-  if (requestResult.status == 200) return requestResult.data;
-  else if (requestResult.status == 204) return null;
-  else throw Error("Internal Server Error");
+  try {
+    const requestResult = await axios.post(url, {}, {
+      headers: {
+        Cookie: `accessToken=${accessToken?.value}; refreshToken=${refreshToken?.value}`
+      }
+    });
+    return requestResult;
+  } catch (err) {
+    console.error("accessToken not valid");
+    return null;
+  }
 }
 
-const handler = NextAuth(authOptions);
-export { handler as GET, handler as POST};
+const refreshAccessToken = async () => {
+  const cookieStore = await cookies();
+  const accessToken = cookieStore.get('accessToken');
+  const refreshToken = cookieStore.get('refreshToken');
+  const url = process.env.NEXTAUTH_BEURL?.concat("auth/refresh");
+  if (!url) throw Error("url not specified in .env");
+  try {
+    const requestResult = await axios.post(url, {}, {
+      headers: {
+        Cookie: `accessToken=${accessToken?.value}; refreshToken=${refreshToken?.value}`
+      }
+    });
+    return requestResult;
+  } catch (err) {
+    console.error("refreshToken not valid");
+    return null;
+  }
+}
+
+const fetchUserIdLegacy = async (payload: userAuthTsType) => {
+  const url = process.env.NEXTAUTH_BEURL?.concat("auth/signin/legacy");
+  if (!url) throw Error("url not specified in .env");
+  const requestResult = await axios.post(url, payload);
+  return requestResult;
+}
+
+const createUser = async (payload: userAuthTsType) => {
+  const url = process.env.NEXTAUTH_BEURL?.concat("auth/signup");
+  if (!url) throw Error("url not specified in .env");
+  const createResult = await axios.post(url, payload);
+  return createResult;
+}
+
+const handler = NextAuth(nextAuthOptions);
+export { handler as GET, handler as POST };

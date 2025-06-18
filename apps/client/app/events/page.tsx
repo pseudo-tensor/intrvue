@@ -1,7 +1,7 @@
-export default function Home() {
+export default function Events() {
   return (
     <div>
-      Landing
+      Events Page
     </div>
   );
 }

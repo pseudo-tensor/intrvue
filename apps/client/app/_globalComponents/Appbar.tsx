@@ -1,5 +1,7 @@
 import Link from "next/link"
 import { signOut, useSession } from "next-auth/react"
+import { useRouter } from "next/navigation";
+import { signIn } from "next-auth/react";
 
 export function Appbar() {
   const { data: session } = useSession();
@@ -26,10 +28,14 @@ export function UserProfileNavbar() {
 }
 
 export default function LandingAuthCompoenent() {
+  const router = useRouter();
+
   return (
     <div>
-      <Link href="/sign-in"><button><h4> Sign In </h4></button></Link>
-      <Link href="/sign-up"><button><h4> Sign up </h4></button></Link>
+      <button onClick={async () => { await signIn('token-req', { redirect: true })}}>
+        <h4> Sign In </h4>
+      </button>
+      <button onClick={() => { router.push('/sign-up') }}><h4> Sign up </h4></button>
     </div>
   )
 }

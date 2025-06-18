@@ -17,12 +17,11 @@ export default function SignInPage() {
       <br />
       <button
         onClick={async () => {
-          const res = await signIn("credentials", {
+          await signIn("sign-in-req", {
             username: username,
-            password: username,
+            password: password,
             redirect: false,
           });
-          console.log(res);
           router.push("/");
         }}
       >
