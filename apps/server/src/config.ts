@@ -5,6 +5,8 @@ dotenv.config();
 
 const config = {
   port: process.env.PORT,
+  wsport: process.env.WSPORT,
+  host: process.env.WSHOST,
   jwtSecret: process.env.JWT_SECRET,
   accTokenExp: process.env.JWT_ACCESS_EXPIRATION_MINUTES,
   refTokenExp: process.env.JWT_REFRESH_EXPIRATION_DAYS,

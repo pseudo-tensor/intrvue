@@ -12,7 +12,9 @@ import { yCollab } from 'y-codemirror.next';
 import { javascript } from '@codemirror/lang-javascript';
 
 const ydoc = new Y.Doc();
-const provider = new WebsocketProvider('wss://demos.yjs.dev', 'ws/codemirror-demo-2025-06-06', ydoc);
+const url = process.env.URL? process.env.URL : 'ws://localhost:8081';
+const room = process.env.ROOMNAME? process.env.ROOMNAME : 'my-roomname';
+const provider = new WebsocketProvider(url, room, ydoc);
 
 export default function CodeEditor() {
   const { code, setCode } = useCodeStore(

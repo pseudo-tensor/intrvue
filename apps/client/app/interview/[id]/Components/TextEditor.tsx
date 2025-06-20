@@ -21,6 +21,9 @@ const mySchema = new Schema({
   marks: baseSchema.spec.marks,
 });
 
+const url = process.env.URL? process.env.URL : 'ws://localhost:8081';
+const room = process.env.ROOMNAME? process.env.ROOMNAME : 'my-roomname';
+
 export default function TextEditor() {
   const docJSON = useTextStore((s) => s.docJSON);
   const setDocJSON = useTextStore((s) => s.setDocJSON);
@@ -34,7 +37,7 @@ export default function TextEditor() {
     ydocRef.current = ydoc;
 
     // Connect to public y-websocket demo server or your own
-    const provider = new WebsocketProvider('wss://demos.yjs.dev', 'ws/prosemirror-demo-2025-06-06', ydoc);
+    const provider = new WebsocketProvider(url, room, ydoc);
     const yXmlFragment = ydoc.getXmlFragment('prosemirror');
 
     const state = EditorState.create({
