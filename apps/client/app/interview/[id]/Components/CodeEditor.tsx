@@ -10,16 +10,16 @@ import * as Y from 'yjs';
 import { WebsocketProvider } from 'y-websocket';
 import { yCollab } from 'y-codemirror.next';
 import { javascript } from '@codemirror/lang-javascript';
+import { useParams } from 'next/navigation';
 
 const ydoc = new Y.Doc();
 const url = process.env.URL? process.env.URL : 'ws://localhost:8081';
-const room = process.env.ROOMNAME? process.env.ROOMNAME : 'my-roomname';
-const provider = new WebsocketProvider(url, room, ydoc);
 
 export default function CodeEditor() {
   const { code, setCode } = useCodeStore(
     (state) => state,
   )
+  const interviewId = useParams<{id: string}>()?.id;
   const editor = useRef<any>(null);
   const valueRef = useRef<string>(code);
   const ytext = ydoc.getText('codemirror');
@@ -31,6 +31,7 @@ export default function CodeEditor() {
 
   useEffect(() => {
     // CodeMirror Extension: update code in store
+    const provider = new WebsocketProvider(url, interviewId, ydoc);
     const onUpdate = EditorView.updateListener.of((view) => {
       if (view.docChanged) {
         setCode(view.state.doc.toString());

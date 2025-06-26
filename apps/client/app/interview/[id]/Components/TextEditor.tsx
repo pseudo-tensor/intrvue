@@ -15,6 +15,7 @@ import { exampleSetup } from "prosemirror-example-setup";
 import * as Y from 'yjs';
 import { WebsocketProvider } from 'y-websocket';
 import { ySyncPlugin, yCursorPlugin } from 'y-prosemirror';
+import { useParams } from "next/navigation";
 
 const mySchema = new Schema({
   nodes: addListNodes(baseSchema.spec.nodes, "paragraph block*", "block"),
@@ -22,12 +23,11 @@ const mySchema = new Schema({
 });
 
 const url = process.env.URL? process.env.URL : 'ws://localhost:8081';
-const room = process.env.ROOMNAME? process.env.ROOMNAME : 'my-roomname';
 
 export default function TextEditor() {
   const docJSON = useTextStore((s) => s.docJSON);
   const setDocJSON = useTextStore((s) => s.setDocJSON);
-
+  const interviewId = useParams<{id: string}>()?.id;
   const editorRef = useRef<HTMLDivElement | null>(null);
   const ydocRef = useRef<Y.Doc | null>(null);
   const viewRef = useRef<EditorView | null>(null);
@@ -37,7 +37,7 @@ export default function TextEditor() {
     ydocRef.current = ydoc;
 
     // Connect to public y-websocket demo server or your own
-    const provider = new WebsocketProvider(url, room, ydoc);
+    const provider = new WebsocketProvider(url, interviewId, ydoc);
     const yXmlFragment = ydoc.getXmlFragment('prosemirror');
 
     const state = EditorState.create({

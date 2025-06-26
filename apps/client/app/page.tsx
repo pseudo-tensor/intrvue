@@ -1,11 +1,9 @@
-'use client'
-import { Appbar } from "./_globalComponents/Appbar";
-import { SessionProvider, } from "next-auth/react";
+import { AppBarWrapper } from "./_globalComponents/Appbar";
 
 export default function Home() {
   return (
-    <SessionProvider>
-      <Appbar/>
-    </SessionProvider>
+    <div>
+      <AppBarWrapper />
+    </div>
   );
 }

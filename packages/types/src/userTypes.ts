@@ -1,5 +1,4 @@
 import { z } from 'zod/v4';
-import { TokenStatus, zAuthResponse, zTokenStatus } from './restEnums';
 
 export const userAuthZodType = z.object({
   jwtToken: z.string().optional(),
@@ -12,10 +11,9 @@ export const userAuthZodType = z.object({
 export type userAuthTsType = z.infer<typeof userAuthZodType>;
 
 export const userDetailsZodType = z.object({
-  id: z.string().uuid().optional(),
-  enum: zAuthResponse.optional() || zTokenStatus.optional(),
-  accessTokenStatus: zTokenStatus.optional(),
-  refreshTokenStatus: zTokenStatus.optional(),
+  id: z.string().uuid(),
+  name: z.string(),
+  email: z.string().email(),
 })
 
 

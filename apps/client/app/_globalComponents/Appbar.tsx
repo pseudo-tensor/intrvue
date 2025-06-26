@@ -1,7 +1,16 @@
-import Link from "next/link"
+'use client'
 import { signOut, useSession } from "next-auth/react"
 import { useRouter } from "next/navigation";
 import { signIn } from "next-auth/react";
+import { SessionProvider, } from "next-auth/react";
+
+export function AppBarWrapper() {
+  return (
+    <SessionProvider>
+      <Appbar/>
+    </SessionProvider>
+  )
+}
 
 export function Appbar() {
   const { data: session } = useSession();
@@ -19,9 +28,11 @@ export function Appbar() {
 
 export function UserProfileNavbar() {
   const { data: session } = useSession();
+  const router = useRouter();
+
   return (
     <div>
-      <Link href="/me"><button ><h4> {session?.user?.name} </h4></button></Link>
+      <button onClick={() => { router.push('/me') }}><h4> {session?.user?.name} </h4></button>
       <button onClick={async ()=>{await signOut()}}><h4> Sign Out </h4></button>
     </div>
   )

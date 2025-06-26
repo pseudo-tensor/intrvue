@@ -1,10 +1,29 @@
 import axios from 'axios';
-import NextAuth, { EventCallbacks } from 'next-auth';
+import NextAuth, { User, Session, DefaultSession, DefaultUser } from 'next-auth';
 import CredentialsProvider from "next-auth/providers/credentials";
 import { userAuthTsType, userAuthZodType } from '@repo/types/userTypes';
 import { authResponse } from '@repo/types/restEnums';
 import { cookies } from "next/headers";
+import { AdapterUser } from 'next-auth/adapters';
+import { JWT } from 'next-auth/jwt';
 
+declare module "next-auth" {
+  interface Session {
+    user: {
+      id: string; // Add this line to allow id inside session.user
+    } & DefaultSession["user"];
+  }
+
+  interface User extends DefaultUser {
+    id: string; // Add this line to allow id inside the user object (for JWT)
+  }
+}
+
+declare module "next-auth/jwt" {
+  interface JWT {
+    id?: string; // Add this to allow id inside the JWT
+  }
+}
 axios.defaults.withCredentials = true;
 
 const userSignInCredentials = {
@@ -28,12 +47,18 @@ const tokenSignInProvider = CredentialsProvider({
     let user;
     user = await fetchUserId();
     if (user) {
-      return user.data;
+      return {
+        ...user.data,
+        id: user.data.userId
+      }
     }
 
     user = await refreshAccessToken();
     if (user) {
-      return user.data;
+      return {
+        ...user.data,
+        id: user.data.userId
+      }
     }
     return null;
   }
@@ -102,7 +127,10 @@ const signInProvider = CredentialsProvider({
         }
       }
     }
-    return user.data;
+    return {
+      ...user.data,
+      id: user.data.userId
+    }
   }
 })
 
@@ -153,7 +181,10 @@ const signUpProvider = CredentialsProvider({
           }
         }
       }
-      return user.data;
+      return {
+        ...user.data,
+        id: user.data.userId
+      }
     }
 })
 
@@ -163,6 +194,24 @@ const nextAuthOptions = {
     signInProvider,
     signUpProvider
   ],
+  callbacks: {
+    jwt({ token, user }: {token: JWT, user: User | AdapterUser }) {
+      if (user) {
+        return { ...token, id: user.id }; // Save id to token as docs says: https://next-auth.js.org/configuration/callbacks
+      }
+      return token;
+    },
+    session: ({ session, token, user }: {session: Session, token: JWT, user: User | AdapterUser }) => {
+      return {
+        ...session,
+        user: {
+          ...session.user,
+          // id: user.id, // This is copied from official docs which find user is undefined
+          id: token.id, // Get id from token instead
+        },
+      };
+    },
+  },
   pages: {
     signIn: '/sign-in',
     signOut: '/signout',
