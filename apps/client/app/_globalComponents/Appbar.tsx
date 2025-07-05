@@ -4,8 +4,7 @@ import { useRouter } from "next/navigation";
 import { signIn } from "next-auth/react";
 import { SessionProvider, } from "next-auth/react";
 
-export function AppBarWrapper() {
-  return (
+export function AppBarWrapper() { return (
     <SessionProvider>
       <Appbar/>
     </SessionProvider>
@@ -16,11 +15,8 @@ export function Appbar() {
   const { data: session } = useSession();
   return (
   <div>
-    <div style={{display: 'flex', justifyContent: 'space-between'}}>
-      <h1>Landing</h1>
-      {
-        session? <UserProfileNavbar /> : <LandingAuthCompoenent />
-      }
+    <div>
+      { session? <UserProfileNavbar /> : <LandingAuthCompoenent /> }
     </div>
   </div>
   )

@@ -1,9 +1,10 @@
 // TODO: separate out ws connection stuff to lib/hooks
-
+'use client'
 import "prosemirror-view/style/prosemirror.css";
 import "prosemirror-example-setup/style/style.css";
 import "prosemirror-menu/style/menu.css";
 
+import { Transaction } from "prosemirror-state";
 import { useEffect, useRef } from "react";
 import { useTextStore } from '@repo/store/providers/textStoreProvider';
 import { Schema } from "prosemirror-model";
@@ -40,25 +41,38 @@ export default function TextEditor() {
     const provider = new WebsocketProvider(url, interviewId, ydoc);
     const yXmlFragment = ydoc.getXmlFragment('prosemirror');
 
+    const customCursor = yCursorPlugin(provider.awareness, {
+      cursorBuilder: user => {
+        const cursor = document.createElement("span");
+        cursor.classList.add("ProseMirror-yjs-cursor");
+        cursor.style.borderLeft = `2px solid ${user.color || "blue"}`;
+        cursor.style.marginLeft = "0px";
+        cursor.style.pointerEvents = "none";
+        return cursor;
+      }
+    });
+
     const state = EditorState.create({
       doc: mySchema.nodeFromJSON(docJSON),
       plugins: [
         ySyncPlugin(yXmlFragment),
-        yCursorPlugin(provider.awareness),
+        customCursor,
         ...exampleSetup({ schema: mySchema })
       ]
     });
 
-    const view = new EditorView(editorRef.current, {
-      state,
-      dispatchTransaction(tr) {
-        if (viewRef.current) {
-          const newState = viewRef.current.state.apply(tr);
-          view.updateState(newState);
-          setDocJSON(newState.doc.toJSON());
-        }
-     },
-    });
+  const view = new EditorView(editorRef.current, {
+    state,
+    dispatchTransaction: (tr: Transaction) => {},
+  });
+
+  view.setProps({
+    dispatchTransaction: (tr: Transaction) => {
+      const newState = view.state.apply(tr);
+      view.updateState(newState);
+      setDocJSON(newState.doc.toJSON());
+    },
+  });
 
     viewRef.current = view;
 

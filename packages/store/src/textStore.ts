@@ -19,7 +19,7 @@ const mySchema = new Schema({
   marks: baseSchema.spec.marks,
 });
 
-const defaultInitState: TextState = {
+export const defaultInitState: TextState = {
   docJSON: {
     type: 'doc',
     content: [

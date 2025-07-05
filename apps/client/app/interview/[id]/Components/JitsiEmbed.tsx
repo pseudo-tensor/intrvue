@@ -3,29 +3,27 @@ import { useEffect, useState } from 'react';
 import { createJitsiToken } from '../../../api/jitsi/route';
 import { useSession } from 'next-auth/react';
 import { useParams } from 'next/navigation';
+import { APPID } from '../../../_globalComponents/config';
 
 export default function JitsiEmbed () {
+  const session = useSession();
   const interviewId = useParams<{id: string}>()?.id;
   const [token, setToken] = useState('');
-  // TODO: move this shit outta here
-  const APPID = 'vpaas-magic-cookie-b5c13518a9d74254a44612fcd66f0ffd';
-  // TODO: clean this up maybe
-  const session = useSession();
+
   const id = session.data?.user.id;
   const name = session.data?.user.name;
   const email = session.data?.user.email;
 
   useEffect(() => {
     const fetchToken = async () => {
-
       if (!id || !name || !email) return;
       const res = await createJitsiToken({
         id: id,
         name: name,
         email: email
       });
-      const data = await res.json();
-      setToken(data.token);
+      if (!res.success) return;
+      setToken(res.token!);
     };
 
     fetchToken();

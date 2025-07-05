@@ -1,6 +1,7 @@
 import express, { Router } from 'express';
 import testRoute from './test.route';
 import authRoute from './auth.route'
+import interviewRoute from './interview.route';
 
 const router: Router = express.Router();
 const defaultRoutes = [
@@ -11,6 +12,10 @@ const defaultRoutes = [
   {
     path: '/auth/',
     route: authRoute,
+  },
+  {
+    path: '/interview/',
+    route: interviewRoute
   }
 ];
 

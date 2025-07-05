@@ -25,3 +25,13 @@ export enum authResponse {
 }
 
 export const zAuthResponse = z.enum(authResponse);
+
+export enum sessionModifiers {
+  CANCEL_INTERVIEW = 'CANCEL_INTERVIEW',
+  CHANGE_DATE = 'CHANGE_DATE',
+  SET_PARTICIPANT = 'SET_PARTICIPANT',
+  REMOVE_PARTICIPANT = 'REMOVE_PARTICIPANT',
+  FINISH_INTERVIEW = 'FINISH_INTERVIEW'
+}
+
+export const zSessionModifiers = z.enum(sessionModifiers);

@@ -31,6 +31,7 @@
   "devDependencies": {
     "@repo/eslint-config": "workspace:*",
     "@repo/types": "workspace:*",
+    "@repo/store": "workspace:*",
     "@repo/typescript-config": "workspace:*",
     "@types/cookie-parser": "^1.4.9",
     "@types/cors": "^2.8.19",

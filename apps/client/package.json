@@ -23,6 +23,7 @@
     "jsonwebtoken": "^9.0.2",
     "next": "^15.3.3",
     "next-auth": "^4.24.11",
+    "nextjs-cors": "^2.2.0",
     "prosemirror-commands": "^1.7.1",
     "prosemirror-example-setup": "^1.2.3",
     "prosemirror-keymap": "^1.2.3",

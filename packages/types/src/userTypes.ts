@@ -1,4 +1,5 @@
 import { z } from 'zod/v4';
+import { zSessionModifiers } from './restEnums';
 
 export const userAuthZodType = z.object({
   jwtToken: z.string().optional(),
@@ -16,7 +17,6 @@ export const userDetailsZodType = z.object({
   email: z.string().email(),
 })
 
-
 export type userDetailsTsType = z.infer<typeof userDetailsZodType>;
 
 export const signinResponseZodType = z.object({
@@ -24,3 +24,36 @@ export const signinResponseZodType = z.object({
 })
 
 export type signinResponseTsType = z.infer<typeof signinResponseZodType>;
+
+
+export const createSessionZodType = z.object({
+  id: z.string().uuid(),
+  pUsername: z.string().optional(),
+  date: z.union([
+    z.string().datetime(),         // allow ISO string
+    z.date()
+  ]).optional().transform((val) => typeof val === 'string' ? new Date(val) : val)
+});
+
+
+export type createSessionTsType = z.infer<typeof createSessionZodType>;
+
+export const fetchInterviewDetailsZodType = z.object({
+  id: z.string().uuid(),
+  enum: zSessionModifiers,
+  modificationPayload: createSessionZodType
+})
+
+export type fetchInterviewDetailsZodType = z.infer<typeof fetchInterviewDetailsZodType>;
+
+export const sessionDataZodType = z.object({
+  session_id: z.string(),
+  host_id: z.string().uuid(),
+  participant_id: z.string().uuid().optional(),
+  status: z.string(),
+  date: z.date().optional(),
+  code_data: z.string(),
+  text_data: z.json()
+})
+
+export type sessionDataTsType = z.infer<typeof sessionDataZodType>;

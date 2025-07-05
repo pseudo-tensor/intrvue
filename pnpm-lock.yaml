@@ -56,6 +56,9 @@ importers:
       next-auth:
         specifier: ^4.24.11
         version: 4.24.11(next@15.3.3(react-dom@19.1.0(react@19.1.0))(react@19.1.0))(react-dom@19.1.0(react@19.1.0))(react@19.1.0)
+      nextjs-cors:
+        specifier: ^2.2.0
+        version: 2.2.0(next@15.3.3(react-dom@19.1.0(react@19.1.0))(react@19.1.0))
       prosemirror-commands:
         specifier: ^1.7.1
         version: 1.7.1
@@ -193,6 +196,9 @@ importers:
       '@repo/eslint-config':
         specifier: workspace:*
         version: link:../../packages/eslint-config
+      '@repo/store':
+        specifier: workspace:*
+        version: link:../../packages/store
       '@repo/types':
         specifier: workspace:*
         version: link:../../packages/types
@@ -302,6 +308,9 @@ importers:
       '@repo/eslint-config':
         specifier: workspace:*
         version: link:../eslint-config
+      '@repo/types':
+        specifier: workspace:*
+        version: link:../types
       '@repo/typescript-config':
         specifier: workspace:*
         version: link:../typescript-config
@@ -2601,6 +2610,11 @@ packages:
         optional: true
       sass:
         optional: true
+
+  nextjs-cors@2.2.0:
+    resolution: {integrity: sha512-FZu/A+L59J4POJNqwXYyCPDvsLDeu5HjSBvytzS6lsrJeDz5cmnH45zV+VoNic0hjaeER9xGaiIjZIWzEHnxQg==}
+    peerDependencies:
+      next: ^8.1.1-canary.54 || ^9.0.0 || ^10.0.0-0 || ^11.0.0 || ^12.0.0 || ^13.0.0 || ^14.0.0
 
   no-case@2.3.2:
     resolution: {integrity: sha512-rmTZ9kz+f3rCvK2TD1Ue/oZlns7OGoIWP4fc3llxxRXlOkHKoWPPWJOfFYpITabSow43QJbRIoHQXtt10VldyQ==}
@@ -6301,6 +6315,11 @@ snapshots:
     transitivePeerDependencies:
       - '@babel/core'
       - babel-plugin-macros
+
+  nextjs-cors@2.2.0(next@15.3.3(react-dom@19.1.0(react@19.1.0))(react@19.1.0)):
+    dependencies:
+      cors: 2.8.5
+      next: 15.3.3(react-dom@19.1.0(react@19.1.0))(react@19.1.0)
 
   no-case@2.3.2:
     dependencies:

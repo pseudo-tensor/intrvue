@@ -6,6 +6,7 @@ import { authResponse } from '@repo/types/restEnums';
 import { cookies } from "next/headers";
 import { AdapterUser } from 'next-auth/adapters';
 import { JWT } from 'next-auth/jwt';
+import { signOut } from 'next-auth/react';
 
 declare module "next-auth" {
   interface Session {
@@ -194,6 +195,9 @@ const nextAuthOptions = {
     signInProvider,
     signUpProvider
   ],
+  events: {
+    signOut: (message: { session: Session; token: JWT }) => {}
+  },
   callbacks: {
     jwt({ token, user }: {token: JWT, user: User | AdapterUser }) {
       if (user) {
