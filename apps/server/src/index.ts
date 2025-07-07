@@ -38,9 +38,28 @@ const unexpectedErrorHandler = (error: Error) => {
 process.on('uncaughtException', unexpectedErrorHandler);
 process.on('unhandledRejection', unexpectedErrorHandler);
 
-process.on('SIGTERM', () => {
+
+process.on('SIGTERM', async () => {
   console.info('SIGTERM received');
-  if (server) {
-    server.close();
+
+  try {
+    if (server) {
+      await new Promise((resolve) => server.close(resolve));
+      console.info('HTTP server closed');
+    }
+
+    if (wsserver && typeof wsserver.close === 'function') {
+      await new Promise((resolve) => wsserver.close(resolve));
+      console.info('WebSocket server closed');
+    }
+
+    await prisma.$disconnect();
+    console.info('Disconnected from DB');
+
+    process.exit(0);
+  } catch (err) {
+    console.error('Error during shutdown', err);
+    process.exit(1);
   }
 });
+

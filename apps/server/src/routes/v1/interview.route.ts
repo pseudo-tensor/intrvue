@@ -4,8 +4,10 @@ import { createSessionZodType, fetchInterviewDetailsZodType } from '@repo/types/
 import { sessionModifiers } from '@repo/types/restEnums';
 import { SessionStatus } from '@prisma/client';
 import { defaultInitState } from '@repo/store/stores/textStore';
+import { checkAccessToken } from '../../middlewares/authMiddleware';
 
 const router: Router = express.Router();
+router.use(checkAccessToken);
 
 router.post('/new', async (req, res) => {
   console.log(req.body);

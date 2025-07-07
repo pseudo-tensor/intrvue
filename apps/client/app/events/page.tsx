@@ -1,8 +1,14 @@
+'use client'
+import { SessionProvider } from 'next-auth/react';
+import EventsComponent from './_Components/Events';
+
 export default function Events() {
-  // TODO: Add auth guard and redirect and shi
   return (
     <div>
-      Events Page
+			<SessionProvider>
+				<EventsComponent	/>
+			</SessionProvider>
     </div>
   );
 }
+
