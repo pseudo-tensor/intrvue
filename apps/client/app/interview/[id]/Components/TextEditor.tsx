@@ -45,7 +45,7 @@ export default function TextEditor() {
       cursorBuilder: user => {
         const cursor = document.createElement("span");
         cursor.classList.add("ProseMirror-yjs-cursor");
-        cursor.style.borderLeft = `2px solid ${user.color || "blue"}`;
+        cursor.style.borderLeft = '2px solid blue';
         cursor.style.marginLeft = "0px";
         cursor.style.pointerEvents = "none";
         return cursor;
@@ -63,6 +63,10 @@ export default function TextEditor() {
 
   const view = new EditorView(editorRef.current, {
     state,
+    attributes: {
+      style: "font-size: 200%; line-height: 1.4;",
+      class: "min-h-[50vh]"
+    },
     dispatchTransaction: (tr: Transaction) => {},
   });
 
@@ -85,8 +89,8 @@ export default function TextEditor() {
   }, []);
 
   return (
-    <div>
-      <div ref={editorRef} />
+    <div className='w-[50vw] h-[50vh] overflow-hidden'> {/* 50% of viewport height */}
+      <div ref={editorRef} className='w-full h-full overflow-auto' />
     </div>
   );
 }

@@ -46,7 +46,17 @@ export const fetchInterviewDetailsZodType = z.object({
 
 export type fetchInterviewDetailsZodType = z.infer<typeof fetchInterviewDetailsZodType>;
 
+const participantType = z.object({
+  username: z.string(),
+})
+
+const hostType = z.object({
+  username: z.string(),
+})
+
 export const sessionDataZodType = z.object({
+  host: hostType,
+  participant: participantType.nullable(),
   session_id: z.string(),
   host_id: z.string().uuid(),
   participant_id: z.string().uuid().optional(),

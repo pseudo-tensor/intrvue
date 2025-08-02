@@ -11,9 +11,13 @@ import { WebsocketProvider } from 'y-websocket';
 import { yCollab } from 'y-codemirror.next';
 import { javascript } from '@codemirror/lang-javascript';
 import { useParams } from 'next/navigation';
+import { oneDark } from '@codemirror/theme-one-dark';
 
 const ydoc = new Y.Doc();
 const url = process.env.URL? process.env.URL : 'ws://localhost:8081';
+const minLines = 60;
+const lineHeight = 1.4;
+const fontSize = 14;
 
 export default function CodeEditor() {
   const { code, setCode } = useCodeStore(
@@ -51,16 +55,40 @@ export default function CodeEditor() {
       extensions: [
         [...languages],
         basicSetup,
+        oneDark,
         keymap.of(defaultKeymap),
         onUpdate,
         yCollab(ytext, provider.awareness),
-        drawSelection()
+        drawSelection(),
+        EditorView.theme({
+          "&": {
+            fontSize: "22px"
+          },
+          ".cm-content": {
+            fontSize: "22px"
+          }
+        }),
+        EditorView.theme({
+          "&": {
+            fontSize: `${fontSize}px`,
+            lineHeight: lineHeight
+          },
+          ".cm-content": {
+            minHeight: `${minLines * fontSize * lineHeight}px`
+          },
+          ".cm-editor": {
+            minHeight: `${minLines * fontSize * lineHeight}px`
+          }
+        })
       ],
     };
 
     const startState = EditorState.create(codeMirrorOptions);
     const view = new EditorView({
       state: startState,
+      attributes: {
+        style: "font-size: 200%; line-height: 1.4;"
+      },
       parent: editor.current,
     });
 
@@ -70,6 +98,8 @@ export default function CodeEditor() {
   }, []);
 
   return (
-    <div style={{width: 'auto'}} ref={editor} />
+    <div className='w-[50vw] h-[100vh] overflow-hidden'> {/* 50% of viewport height */}
+      <div ref={editor} className='w-full h-full overflow-auto' />
+    </div>
   );
 }

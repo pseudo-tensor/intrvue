@@ -3,12 +3,12 @@ import { useRouter } from 'next/navigation';
 
 export default function Redirecting() {
   const router = useRouter();
-  setTimeout(async () => { router.push('/')}, 5000);
+  router.push('/');
 
   return (
-    <div>
-      <h1>You are not logged in</h1>
-      <h3>Redirecting to home page</h3>
+    <div className='h-screen my-auto'>
+      <p className='text-4xl text-center'>You are not logged in</p>
+      <p className='text-4xl text-center'>Redirecting to home page</p>
     </div>
   )
 }

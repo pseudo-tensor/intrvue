@@ -5,9 +5,9 @@ import EventsComponent from './_Components/Events';
 export default function Events() {
   return (
     <div>
-			<SessionProvider>
-				<EventsComponent	/>
-			</SessionProvider>
+      <SessionProvider>
+        <EventsComponent/>
+      </SessionProvider>
     </div>
   );
 }

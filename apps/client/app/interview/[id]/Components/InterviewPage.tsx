@@ -9,7 +9,7 @@ import JitsiEmbed from './JitsiEmbed';
 import Redirecting from './Redirecting';
 import Loading from '../../../_globalComponents/Loading';
 import { codeStore } from '@repo/store/stores/codeStore'
-import { useEffect } from 'react';
+import { useState, useEffect } from 'react';
 import { interviewStore } from '@repo/store/stores/interviewStore';
 import { textStore } from '@repo/store/stores/textStore';
 // import { getInterviewDetails } from '../../../api/interview/route';
@@ -19,6 +19,7 @@ import { useRouter } from 'next/navigation';
 export default function InterviewPage() {
   // const interview = useInterviewStore((s) => s)
   // const setInterview = useInterviewStore((s) => s.setInterview)
+  const [showID, setShowID] = useState(false);
   const interviewId = useParams<{id: string}>()?.id;
   const session = useSession();
   const router = useRouter();
@@ -90,17 +91,17 @@ export default function InterviewPage() {
 
   return (
     <div>
-    <h1>Interview ID: {interviewId}</h1>
-      <SessionProvider>
-        <JitsiEmbed />
-      </SessionProvider>
-      <div style={{display: 'flex', width: '100%'}}>
-        <div style={{flex: 1}}>
+      { /* <p className='text-2xl cursor-pointer' onClick={()=>{setShowID(!showID)}}> {!showID? "Show ID" : {interviewId}} </p> */ }
+      <div className='flex w-full'>
+        <div className='flex-1'>
+          <SessionProvider>
+            <JitsiEmbed />
+          </SessionProvider>
           <TextStoreProvider>
             <TextEditor />
           </TextStoreProvider>
         </div>
-        <div style={{flex: 1}}>
+        <div className='flex-1'>
           <CodeStoreProvider>
             <CodeEditor />
           </CodeStoreProvider>

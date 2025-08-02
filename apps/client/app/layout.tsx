@@ -1,15 +1,14 @@
 import './globals.css';
-
 export default function RootLayout({
-  children,
+	children,
 }: Readonly<{
-  children: React.ReactNode;
+	children: React.ReactNode;
 }>) {
-  return (
-    <html lang="en">
-      <body>
-        {children}
-      </body>
-    </html>
-  );
+	return (
+	  <html lang="en">
+			<body className='font-light bg-gunmetal text-ghost-white font-zilla'>
+				{children}
+			</body>
+	  </html>
+	);
 }

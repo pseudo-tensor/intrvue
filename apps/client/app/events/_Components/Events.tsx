@@ -1,11 +1,13 @@
 'use client'
-import { useState } from "react";
-import { useEffect } from "react";
+import { useState, useEffect } from "react";
+import { useRouter } from "next/navigation";
 import { useSession } from "next-auth/react";
 import Loading from "../../_globalComponents/Loading";
 import Redirecting from "../../interview/[id]/Components/Redirecting";
 import { getUserHostedSessions } from "../../api/interview/route";
 import { getUserParticipatedSessions } from "../../api/interview/route";
+import EventCard from "./EventCard";
+import { AppBarWrapper } from "../../_globalComponents/Appbar";
 
 export default function EventsComponent() {
 	// TODO: Use zustand persisted states for these session states
@@ -13,6 +15,7 @@ export default function EventsComponent() {
 	const [hostedSessions, setHostedSessions] = useState<sessionDataTsType[]>([]);
 	const [participatedSessions, setParticipatedSessions] = useState<sessionDataTsType[]>([]);
 	const session = useSession();
+  const router = useRouter();
 	const id = session.data?.user.id;
 
   useEffect(() => {
@@ -30,17 +33,38 @@ export default function EventsComponent() {
 	}, [id]);
 
 	if (session.status == 'loading') return (<Loading />);
-	if (session.status == 'unauthenticated') return (<Redirecting />);
+  if (session.status == 'unauthenticated') return (<Redirecting />);
 
   return (
     <div>
-			<h1>Hosted Sessions</h1>
-			{ 
-				hostedSessions.map((session: any) => {
-					return (<div key={session.session_id} ><h4> {JSON.stringify(session)} </h4></div>);
-				}) 
-			}
-			<h1>Participated Sessions</h1>
+      <AppBarWrapper />
+      <div className='flex'>
+        <div className='w-4/5 my-5'>
+          <p className='mb-8 text-3xl text-center'>Hosted Sessions</p>
+          { 
+            hostedSessions.map((session: any) => {
+              return (
+                <div key={session.session_id} >
+                  <EventCard type='host' sessionData={session} router={router} />
+                </div>
+              );
+            })
+          }
+          <p className='mb-8 text-3xl text-center'>Participated Sessions</p>
+          { 
+            participatedSessions.map((session: any) => {
+              return (
+                <div key={session.session_id} >
+                  <EventCard type='participant' sessionData={session} router={router} />
+                </div>
+              );
+            }) 
+          }
+        </div>
+        <div className='sticky top-16 w-full h-[calc(100svh-4rem)]'>
+          <img src='image.webp' className='object-cover w-full h-full'/>
+        </div>
+      </div>
     </div>
   );
 }

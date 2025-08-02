@@ -13,12 +13,17 @@ router.post('/hosted', async (req, res) => {
 	}
 
 	try {
-		const searchResult = await prisma.session.findMany({
-			where: {
-				host_id: body.userId
-			}	
-		});
-		res.status(200).json(searchResult);
+        const searchResult = await prisma.session.findMany({
+            where: {
+                host_id: body.userId
+            },
+            include: {
+                participant: {
+                    select: { username: true }
+                },
+            }
+        });
+        res.status(200).json(searchResult);
 	} catch (err) {
 		res.status(500).json({});
 	};
@@ -31,14 +36,20 @@ router.post('/participated', async (req, res) => {
 		return;
 	}
 
+  console.log(body.userId);
 	try {
 		const searchResult = await prisma.session.findMany({
 			where: {
 				participant_id: body.userId
-			}	
-		});
+			},
+      include: {
+        host: {
+          select: { username: true }
+        },
+      }
+    });
 
-		res.status(200).json(searchResult);
+    res.status(200).json(searchResult);
 	} catch (err) {
 		res.status(500).json({});
 	};
