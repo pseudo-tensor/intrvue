@@ -196,7 +196,10 @@ const nextAuthOptions = {
     signUpProvider
   ],
   events: {
-    signOut: (message: { session: Session; token: JWT }) => {}
+    signOut() {
+      cookies().delete("accessToken");
+      cookies().delete("refreshToken");
+    }
   },
   callbacks: {
     jwt({ token, user }: {token: JWT, user: User | AdapterUser }) {
