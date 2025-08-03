@@ -7,7 +7,7 @@ import { APPID } from '../../../_globalComponents/config';
 import Loading from '../../../_globalComponents/Loading';
 import Redirecting from './Redirecting';
 
-export default function JitsiEmbed({ session }) {
+export default function JitsiEmbed({ session } : {session : any}) {
   if (session.status === 'loading') return <Loading />;
   if (session.status === 'unauthenticated') return <Redirecting />;
   
@@ -18,7 +18,7 @@ export default function JitsiEmbed({ session }) {
   );
 }
 
-function JitsiEmbedContent({ session }) {
+function JitsiEmbedContent({ session } : {session : any}) {
 
   const interviewId = useParams()?.id;
   const [token, setToken] = useState('');
