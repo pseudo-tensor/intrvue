@@ -17,6 +17,17 @@ import { textStore } from '@repo/store/stores/textStore';
 import { useRouter } from 'next/navigation';
 
 export default function InterviewPage() {
+  const session = useSession();
+  if (session.status != 'authenticated') return (<Loading />);
+
+  return (
+    <div>
+      <InterviewPageContent />
+    </div>
+  );
+}
+
+function InterviewPageContent() {
   // const interview = useInterviewStore((s) => s)
   // const setInterview = useInterviewStore((s) => s.setInterview)
   const [showID, setShowID] = useState(false);

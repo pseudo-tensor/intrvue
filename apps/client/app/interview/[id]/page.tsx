@@ -7,16 +7,13 @@ import Loading from "../../_globalComponents/Loading";
 
 export default function Interview() {
   const session = useSession();
-
-  if (session.status == 'loading') return (<Loading />);
+  if (session.status != 'authenticated') return (<Loading />);
 
   return (
     <div>
-      <SessionProvider>
-        <InterviewStoreProvider>
-          <InterviewPage />
-        </InterviewStoreProvider>
-      </SessionProvider>
+      <InterviewStoreProvider>
+        <InterviewPage />
+      </InterviewStoreProvider>
     </div>
   )
 }

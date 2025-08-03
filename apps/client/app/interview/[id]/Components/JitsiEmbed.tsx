@@ -8,6 +8,16 @@ import Loading from '../../../_globalComponents/Loading';
 
 export default function JitsiEmbed () {
   const session = useSession();
+  if (session.status != 'authenticated') return (<Loading />);
+
+  return (
+    <div>
+      <JitsiEmbedContent />
+    </div>
+  );}
+
+function JitsiEmbedContent () {
+  const session = useSession();
   const interviewId = useParams<{id: string}>()?.id;
   const [token, setToken] = useState('');
   const [open, setOpen] = useState(false);
