@@ -4,7 +4,7 @@ import { createJitsiToken } from '../../../../lib/jitsiToken';
 import { useSession } from 'next-auth/react';
 import { useParams } from 'next/navigation';
 import { APPID } from '../../../_globalComponents/config';
-import { Modal } from 'react-responsive-modal';
+import Loading from '../../../_globalComponents/Loading';
 
 export default function JitsiEmbed () {
   const session = useSession();
@@ -32,6 +32,8 @@ export default function JitsiEmbed () {
 
     fetchToken();
   }, []);
+
+  if (session.status == 'loading') return <Loading />
 
   return (
     <div>

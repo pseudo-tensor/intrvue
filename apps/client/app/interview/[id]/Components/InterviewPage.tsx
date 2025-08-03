@@ -57,23 +57,6 @@ export default function InterviewPage() {
    return () => unsub();
   }, []);
 
-  /*
-  useEffect(() => {
-    const fetchInterviewServerAction = async () => {
-      const payload = session.data?.user.id!;
-      const result = await getInterviewDetails(payload);
-      if (!result.success) {
-        // handle error here
-        // error = result.error
-        router.push('/interview/');
-        return;
-      }
-      setInterview(result.data);
-    }
-    fetchInterviewServerAction();
-  }, [])
-  */
- 
   if (session.status == 'loading') {
     return (
       <div>
@@ -91,7 +74,6 @@ export default function InterviewPage() {
 
   return (
     <div>
-      { /* <p className='text-2xl cursor-pointer' onClick={()=>{setShowID(!showID)}}> {!showID? "Show ID" : {interviewId}} </p> */ }
       <div className='flex w-full'>
         <div className='flex-1'>
           <SessionProvider>
