@@ -23,7 +23,8 @@ const mySchema = new Schema({
   marks: baseSchema.spec.marks,
 });
 
-const url = process.env.URL? process.env.URL : 'ws://localhost:8081';
+const url = process.env.NEXT_PUBLIC_WSURL ?? 'wss://localhost:8080';
+console.log(url);
 
 export default function TextEditor() {
   const docJSON = useTextStore((s) => s.docJSON);

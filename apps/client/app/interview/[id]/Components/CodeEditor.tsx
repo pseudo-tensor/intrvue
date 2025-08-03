@@ -14,7 +14,8 @@ import { useParams } from 'next/navigation';
 import { oneDark } from '@codemirror/theme-one-dark';
 
 const ydoc = new Y.Doc();
-const url = process.env.URL? process.env.URL : 'ws://localhost:8081';
+const url = process.env.NEXT_PUBLIC_WSURL ?? 'wss://localhost:8080';
+console.log(url);
 const minLines = 60;
 const lineHeight = 1.4;
 const fontSize = 14;
