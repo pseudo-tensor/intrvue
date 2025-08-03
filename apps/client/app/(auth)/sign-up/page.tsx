@@ -41,7 +41,7 @@ export default function SignUpPage() {
   }
 
   useEffect(() => {
-    const clickHandler = (event) => {
+    const clickHandler = (event: any) => {
       if (event.key === "Enter") {
         event.preventDefault();
         document.getElementById("actualButton")?.click();
@@ -119,7 +119,6 @@ export default function SignUpPage() {
           <span className='h-2'></span>
           <Button
             loading={buttonLoading}
-            id='SignUpButton'
             buttonid='actualButton'
             text='Sign Up'
             handler={signUpHandler}

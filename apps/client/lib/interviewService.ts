@@ -24,10 +24,10 @@ export const submitNewSessionReq = async (payload: createSessionTsType) => {
   console.debug("payload success");
   try {
     console.debug(url);
-		const cookieStore = await cookies();
-  	const accessToken = cookieStore.get('accessToken');
-  	const refreshToken = cookieStore.get('refreshToken');
-		const result = await axios.post(url, parsedPayload.data, {
+    const cookieStore = await cookies();
+    const accessToken = cookieStore.get('accessToken');
+    const refreshToken = cookieStore.get('refreshToken');
+    const result = await axios.post(url, parsedPayload.data, {
       headers: {
         Cookie: `accessToken=${accessToken?.value}; refreshToken=${refreshToken?.value}`
       }
@@ -41,11 +41,11 @@ export const submitNewSessionReq = async (payload: createSessionTsType) => {
     };
   } catch (err: any) {
     console.debug("failure");
-    console.error("Axios error:", err?.response?.data || err.message);
+    console.error("Axios error:", err);
     return {
       success: false,
-      status: err?.response?.status || 500,
-      error: err?.response?.data?.message || "Failed to submit session",
+      status: 500,
+      error: "Failed to submit session",
     };
   }
 };
@@ -57,10 +57,10 @@ export const getInterviewDetails = async (userId: string) => {
   }
 
   try {
-		const cookieStore = await cookies();
-  	const accessToken = cookieStore.get('accessToken');
-  	const refreshToken = cookieStore.get('refreshToken');
-		const result = await axios.post(url, payload, {
+    const cookieStore = await cookies();
+    const accessToken = cookieStore.get('accessToken');
+    const refreshToken = cookieStore.get('refreshToken');
+    const result = await axios.post(url, payload, {
       headers: {
         Cookie: `accessToken=${accessToken?.value}; refreshToken=${refreshToken?.value}`
       }
@@ -71,71 +71,71 @@ export const getInterviewDetails = async (userId: string) => {
       data: result.data,
     };
   } catch (err: any) {
-    console.error("Axios error:", err?.response?.data || err.message);
+    console.error("Axios error:", err);
     return {
       success: false,
-      status: err?.response?.status || 500,
-      error: err?.response?.data?.message || "Failed to submit session",
+      status: 500,
+      error: "Failed to submit session",
     };
   }
 }
 
 export const getUserHostedSessions = async (userId: string) => {
-	const url = base + "user/hosted";
-	const payload = {
+  const url = base + "user/hosted";
+  const payload = {
     userId: userId
   }
 
-	try {
-		const cookieStore = await cookies();
-  	const accessToken = cookieStore.get('accessToken');
-  	const refreshToken = cookieStore.get('refreshToken');
-		const result = await axios.post(url, payload, {
+  try {
+    const cookieStore = await cookies();
+    const accessToken = cookieStore.get('accessToken');
+    const refreshToken = cookieStore.get('refreshToken');
+    const result = await axios.post(url, payload, {
       headers: {
         Cookie: `accessToken=${accessToken?.value}; refreshToken=${refreshToken?.value}`
       }
     });
-		return {
+    return {
       success: true,
       status: 200,
       data: result.data,
     }
-	} catch (err) {
-    console.error("Axios error:", err?.response?.data || err.message);
+  } catch (err) {
+    console.error("Axios error:", err);
     return {
       success: false,
-      status: err?.response?.status || 500,
-      error: err?.response?.data?.message || "Failed to submit session",
+      status: 500,
+      error: "Failed to submit session",
     };
   }
 }
 
 export const getUserParticipatedSessions = async (userId: string) => {
-	const url = base + "user/participated";
-	const payload = {
+  const url = base + "user/participated";
+  const payload = {
     userId: userId
   }
 
-	try {
-		const cookieStore = await cookies();
-  	const accessToken = cookieStore.get('accessToken');
-  	const refreshToken = cookieStore.get('refreshToken');
-		const result = await axios.post(url, payload, {
+  try {
+    const cookieStore = await cookies();
+    const accessToken = cookieStore.get('accessToken');
+    const refreshToken = cookieStore.get('refreshToken');
+    const result = await axios.post(url, payload, {
       headers: {
         Cookie: `accessToken=${accessToken?.value}; refreshToken=${refreshToken?.value}`
       }
     });
-		return {
+    return {
       success: true,
       status: 200,
       data: result.data,
     }
-	} catch (err) {
-    console.error("Axios error:", err?.response?.data || err.message);
+  } catch (err) {
+    console.error("Axios error:", err);
     return {
       success: false,
-      status: err?.response?.status || 500,
-      error: err?.response?.data?.message || "Failed to submit session",
+      status: 500,
+      error: "Failed to submit session",
     };
   }
 }

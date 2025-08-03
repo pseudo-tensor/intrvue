@@ -33,7 +33,7 @@ export default function SignInPage() {
   }
 
   useEffect(() => {
-    const clickHandler = (event) => {
+    const clickHandler = (event: any) => {
       if (event.key === "Enter") {
         event.preventDefault();
         document.getElementById("actualButton")?.click();
@@ -86,7 +86,6 @@ export default function SignInPage() {
           <span className='h-2'></span>
           <Button
             loading={buttonLoading}
-            id='SignInButton'
             buttonid='actualButton'
             text='Sign In'
             handler={signInHandler}

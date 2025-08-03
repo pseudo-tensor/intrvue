@@ -1,5 +1,7 @@
+import config from '../../config';
 import express, { Router } from 'express';
 import prisma from '../../prisma/prisma';
+import jwt from 'jsonwebtoken';
 import { createSessionZodType, fetchInterviewDetailsZodType } from '@repo/types/userTypes';
 import { sessionModifiers } from '@repo/types/restEnums';
 import { SessionStatus } from '@prisma/client';
@@ -10,10 +12,8 @@ const router: Router = express.Router();
 router.use(checkAccessToken);
 
 router.post('/new', async (req, res) => {
-  console.log(req.body);
   const user = createSessionZodType.safeParse(req.body);
   if (!user.success) {
-    console.log("payload failure");
     res.status(400).json({});
     return;
   }
@@ -163,6 +163,32 @@ router.post('/fetch', async (req, res) => {
     res.status(200).json(searchResult);
   } catch (err) {
     res.status(404).json({});
+  }
+})
+
+router.post('/jitsi/token', async (req, res) => {
+  if (!req.body.id || !req.body.name || !req.body.email) {
+    res.status(400).json({});
+  }
+  const user = req.body;
+
+  if (!config.jwtSecret) {
+    res.status(500).json({});
+    return;
+  }
+
+  try {
+    const token = jwt.sign({
+      id: user.id,
+      name: user.name,
+      email: user.email,
+    }, config.jwtSecret);
+
+    res.status(200).json({
+      token: token
+    });
+  } catch (err) {
+    res.status(500).json({});
   }
 })
 

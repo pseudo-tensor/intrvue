@@ -12,25 +12,33 @@ export type InterviewStore = InterviewState & InterviewActions;
 
 const initInterviewStore = (): InterviewState => {
   return {
+    host: {
+      username: ""
+    },
+    participant: null,
     session_id: "",
     host_id: "",
-    participant_id: "",
+    participant_id: undefined,
     status: "",
-    date: new Date,
+    date: undefined,
     code_data: "",
     text_data: defaultTextObject
   };
 }
 
 const defaultInitState: sessionDataTsType = {
+  host: {
+    username: ""
+  },
+  participant: null,
   session_id: "",
   host_id: "",
-  participant_id: "",
+  participant_id: undefined,
   status: "",
-  date: new Date,
+  date: undefined,
   code_data: "",
   text_data: defaultTextObject
-}
+};
 
 const createInterviewStore = (
   initState: InterviewState = defaultInitState

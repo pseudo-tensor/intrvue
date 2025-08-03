@@ -4,7 +4,6 @@ import { useRouter } from "next/navigation";
 import { signIn } from "next-auth/react";
 import { SessionProvider, } from "next-auth/react";
 import { Button } from "@repo/ui/Elements";
-import { Link } from "next/link";
 
 export function AppBarWrapper() { 
   const router = useRouter();
@@ -33,9 +32,10 @@ export function UserProfileNavbar() {
   return (
     <div style={{display: 'flex', justifyContent: 'space-between'}}>
       {/* <Button text={session?.user?.name} handler={() => { router.push('/me') }} /> */}
-			<Button text='Interview' handler={() => { router.push('/interview') }} />
-			<Button text='Sessions' handler={() => { router.push('/events') }} />
-			<Button text='Sign out' handler={async ()=>{router.push('/'); await signOut(); }} />
+      <Button text='Interview' handler={() => { router.push('/interview') }} />
+      <div className='hidden'><Button text='Profile' handler={() => { router.push('/me') }} /></div>
+      <Button text='Sessions' handler={() => { router.push('/events') }} />
+      <Button text='Sign out' handler={async ()=>{router.push('/'); await signOut(); }} />
     </div>
   )
 }
@@ -45,8 +45,8 @@ export default function LandingAuthCompoenent() {
 
   return (
     <div style={{display: 'flex', justifyContent: 'space-between'}}>
-			<Button text='Sign In'  handler={async () => { await signIn('token-req', { redirect: true })}} />
-			<Button text='Sign Up'  handler={() => { router.push('/sign-up') }} />
+      <Button text='Sign In'  handler={async () => { await signIn('token-req', { redirect: true })}} />
+      <Button text='Sign Up'  handler={() => { router.push('/sign-up') }} />
     </div>
   )
 }

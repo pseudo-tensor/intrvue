@@ -27,6 +27,8 @@ declare module "next-auth/jwt" {
 }
 axios.defaults.withCredentials = true;
 
+const base = (process.env.NEXTAUTH_BEURL ?? "http://localhost:8080/api/v1/");
+
 const userSignInCredentials = {
   username: { label: "Username", type: "text", placeholder: "username" },
   password: { label: "Password", type: "password", placeholder: "password"}
@@ -197,7 +199,9 @@ const nextAuthOptions = {
   ],
   events: {
     signOut() {
+      // @ts-ignore
       cookies().delete("accessToken");
+      // @ts-ignore
       cookies().delete("refreshToken");
     }
   },
@@ -231,8 +235,7 @@ const fetchUserId = async () => {
   const cookieStore = await cookies();
   const accessToken = cookieStore.get('accessToken');
   const refreshToken = cookieStore.get('refreshToken');
-  const url = process.env.NEXTAUTH_BEURL?.concat("auth/signin/token");
-  if (!url) throw Error("url not specified in .env");
+  const url = base.concat("auth/signin/token");
   try {
     const requestResult = await axios.post(url, {}, {
       headers: {
@@ -250,8 +253,7 @@ const refreshAccessToken = async () => {
   const cookieStore = await cookies();
   const accessToken = cookieStore.get('accessToken');
   const refreshToken = cookieStore.get('refreshToken');
-  const url = process.env.NEXTAUTH_BEURL?.concat("auth/refresh");
-  if (!url) throw Error("url not specified in .env");
+  const url = base.concat("auth/refresh");
   try {
     const requestResult = await axios.post(url, {}, {
       headers: {
@@ -266,15 +268,13 @@ const refreshAccessToken = async () => {
 }
 
 const fetchUserIdLegacy = async (payload: userAuthTsType) => {
-  const url = process.env.NEXTAUTH_BEURL?.concat("auth/signin/legacy");
-  if (!url) throw Error("url not specified in .env");
+  const url = base.concat("auth/signin/legacy");
   const requestResult = await axios.post(url, payload);
   return requestResult;
 }
 
 const createUser = async (payload: userAuthTsType) => {
-  const url = process.env.NEXTAUTH_BEURL?.concat("auth/signup");
-  if (!url) throw Error("url not specified in .env");
+  const url = base.concat("auth/signup");
   const createResult = await axios.post(url, payload);
   return createResult;
 }

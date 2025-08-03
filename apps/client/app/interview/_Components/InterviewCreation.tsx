@@ -4,7 +4,7 @@ import { useRouter } from "next/navigation"
 import { useState, useEffect } from "react";
 import Loading from "../../_globalComponents/Loading";
 import Redirecting from "../[id]/Components/Redirecting";
-import { submitNewSessionReq } from "../../api/interview/route";
+import { submitNewSessionReq } from "../../../lib/interviewService";
 import { useInterviewStore } from '@repo/store/providers/interviewStoreProvider';
 import { Button } from "@repo/ui/Elements";
 import { AppBarWrapper } from "../../_globalComponents/Appbar";

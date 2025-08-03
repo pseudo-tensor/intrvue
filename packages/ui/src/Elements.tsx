@@ -3,7 +3,7 @@ import './react-datepicker.css'
 import { useState, useRef, useEffect } from 'react';
 import DatePicker from 'react-datepicker';
 
-export function Button ({ buttonid, text, handler, loading}) {
+export function Button ({ buttonid, text, handler, loading}: { buttonid?: any, text: any, handler: any, loading?: any}) {
   if (typeof(loading) === 'undefined') loading = false;
 
   return !loading? (
@@ -20,19 +20,3 @@ export function Button ({ buttonid, text, handler, loading}) {
     </div>
   )
 }
-
-export function DateTimePicker () { 
-  const [selectedDateTime, setSelectedDateTime] = useState(new Date());
-  return (
-    <DatePicker
-      selected={selectedDateTime}
-      onChange={(date) => setSelectedDateTime(date)}
-      showTimeSelect
-      timeFormat="HH:mm"
-      timeIntervals={15}
-      timeCaption="time"
-      dateFormat="MMMM d, yyyy h:mm aa"
-    />
-  );
-}
-

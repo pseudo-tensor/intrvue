@@ -90,7 +90,7 @@ export default function CodeEditor() {
         style: "font-size: 200%; line-height: 1.4;"
       },
       parent: editor.current,
-    });
+    } as any);
 
     return () => {
       view.destroy();

@@ -1,6 +1,6 @@
 import { JaaSMeeting } from '@jitsi/react-sdk';
 import { useEffect, useState } from 'react';
-import { createJitsiToken } from '../../../api/jitsi/route';
+import { createJitsiToken } from '../../../../lib/jitsiToken';
 import { useSession } from 'next-auth/react';
 import { useParams } from 'next/navigation';
 import { APPID } from '../../../_globalComponents/config';

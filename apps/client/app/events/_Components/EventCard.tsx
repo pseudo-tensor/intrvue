@@ -4,7 +4,7 @@ import { sessionDataTsType } from "@repo/types/userTypes";
 
 /* TODO: Once status is working, disable button according to that */
 export default function EventCard(
-  { type, sessionData, router }:{type: string, sessionData: sessionDataTsType, router: nextRouter }
+  { type, sessionData, router }:{type: string, sessionData: sessionDataTsType, router: any }
 )
 
 {
@@ -19,7 +19,10 @@ export default function EventCard(
   return (
     <div className='flex justify-center p-6'>
       <div className='w-128'>
-        <span className='flex text-2xl'> <p className='mr-5 text-periwinkle'> Date: </p> { new Date(sessionData.date).toLocaleDateString('en-GB') } </span>
+        <span className='flex text-2xl'> 
+          <p className='mr-5 text-periwinkle'> Date: </p>
+          { new Date(sessionData.date!).toLocaleDateString('en-GB') } 
+        </span>
         {
           type == 'host' 
             ? (<span className='flex text-2xl'> 
@@ -34,7 +37,7 @@ export default function EventCard(
         <p className='text-2xl cursor-pointer text-periwinkle' onClick={()=>{setShowID(!showID)}}> {!showID? "Show ID" : sessionData.session_id} </p>
       </div>
       <div className='w-40 h-20 ml-20'>
-        <Button buttonId={sessionData.session_id } text="Join" handler={buttonHandler} />
+        <Button buttonid={sessionData.session_id } text="Join" handler={buttonHandler} />
       </div>
     </div>
   );

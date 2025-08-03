@@ -4,35 +4,36 @@ import { useRouter } from "next/navigation";
 import { useSession } from "next-auth/react";
 import Loading from "../../_globalComponents/Loading";
 import Redirecting from "../../interview/[id]/Components/Redirecting";
-import { getUserHostedSessions } from "../../api/interview/route";
-import { getUserParticipatedSessions } from "../../api/interview/route";
+import { getUserHostedSessions } from "../../../lib/interviewService";
+import { getUserParticipatedSessions } from "../../../lib/interviewService";
 import EventCard from "./EventCard";
+import { sessionDataTsType } from "@repo/types/userTypes";
 import { AppBarWrapper } from "../../_globalComponents/Appbar";
 
 export default function EventsComponent() {
-	// TODO: Use zustand persisted states for these session states
-	// TODO: Better types for these
-	const [hostedSessions, setHostedSessions] = useState<sessionDataTsType[]>([]);
-	const [participatedSessions, setParticipatedSessions] = useState<sessionDataTsType[]>([]);
-	const session = useSession();
+  // TODO: Use zustand persisted states for these session states
+  // TODO: Better types for these
+  const [hostedSessions, setHostedSessions] = useState<sessionDataTsType[]>([]);
+  const [participatedSessions, setParticipatedSessions] = useState<sessionDataTsType[]>([]);
+  const session = useSession();
   const router = useRouter();
-	const id = session.data?.user.id;
+  const id = session.data?.user.id;
 
   useEffect(() => {
     if (!id) return;
-		const fetchHostedSessions = async () => {
-			const hostedSessionArray = await getUserHostedSessions(id);
-			setHostedSessions(hostedSessionArray.data);
-		}
-		const fetchParticipatedSessions = async () => {
-			const participatedSessionArray = await getUserParticipatedSessions(id);
-			setParticipatedSessions(participatedSessionArray.data);
-		}
-		fetchHostedSessions();
-		fetchParticipatedSessions();
-	}, [id]);
+    const fetchHostedSessions = async () => {
+      const hostedSessionArray = await getUserHostedSessions(id);
+      setHostedSessions(hostedSessionArray.data);
+    }
+    const fetchParticipatedSessions = async () => {
+      const participatedSessionArray = await getUserParticipatedSessions(id);
+      setParticipatedSessions(participatedSessionArray.data);
+    }
+    fetchHostedSessions();
+    fetchParticipatedSessions();
+  }, [id]);
 
-	if (session.status == 'loading') return (<Loading />);
+  if (session.status == 'loading') return (<Loading />);
   if (session.status == 'unauthenticated') return (<Redirecting />);
 
   return (
