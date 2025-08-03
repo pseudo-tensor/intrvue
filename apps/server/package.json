@@ -3,9 +3,9 @@
   "version": "0.1.0",
   "private": true,
   "scripts": {
-    "build": "pnpm clean && tsc",
+    "build": "pnpm clean && turbo run build --filter=@repo/types && tsup",
     "dev": "nodemon",
-    "clean": "rimraf dist/",
+    "clean": "rimraf dist/*",
     "prisma:migrate:dev": "prisma migrate dev --schema='./src/prisma/schema.prisma' --name",
     "prisma:generate": "prisma generate --schema='./src/prisma/schema.prisma'"
   },
@@ -30,8 +30,8 @@
   },
   "devDependencies": {
     "@repo/eslint-config": "workspace:*",
-    "@repo/types": "workspace:*",
     "@repo/store": "workspace:*",
+    "@repo/types": "workspace:*",
     "@repo/typescript-config": "workspace:*",
     "@types/cookie-parser": "^1.4.9",
     "@types/cors": "^2.8.19",
@@ -45,6 +45,7 @@
     "rimraf": "^6.0.1",
     "standard": "^17.1.2",
     "ts-node": "^10.9.2",
+    "tsup": "^8.5.0",
     "typescript": "5.8.2",
     "yjs": "^14.0.0-7"
   }
