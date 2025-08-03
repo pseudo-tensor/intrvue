@@ -4,15 +4,13 @@ import CodeEditor from './CodeEditor';
 import TextEditor from './TextEditor';
 import { CodeStoreProvider } from '@repo/store/providers/codeStoreProvider';
 import { TextStoreProvider } from '@repo/store/providers/textStoreProvider';
-import { SessionProvider, useSession } from 'next-auth/react';
+import { useSession } from 'next-auth/react'; // Removed SessionProvider import
 import JitsiEmbed from './JitsiEmbed';
 import Loading from '../../../_globalComponents/Loading';
 import { codeStore } from '@repo/store/stores/codeStore'
 import { useState, useEffect } from 'react';
 import { interviewStore } from '@repo/store/stores/interviewStore';
 import { textStore } from '@repo/store/stores/textStore';
-// import { getInterviewDetails } from '../../../api/interview/route';
-// import { useInterviewStore } from '@repo/store/providers/interviewStoreProvider';
 import { useRouter } from 'next/navigation';
 import Redirecting from './Redirecting';
 
@@ -32,7 +30,6 @@ export default function InterviewPage() {
       </div>
     )
   }
-
   return (
     <div>
       <InterviewPageContent />
@@ -41,16 +38,13 @@ export default function InterviewPage() {
 }
 
 function InterviewPageContent() {
-  // const interview = useInterviewStore((s) => s)
-  // const setInterview = useInterviewStore((s) => s.setInterview)
   const [showID, setShowID] = useState(false);
   const interviewId = useParams<{id: string}>()?.id;
   const session = useSession();
   const router = useRouter();
-
+  
   useEffect(() => {
     let prevCode = codeStore.getState().code;
-
     const unsub = codeStore.subscribe((state) => {
       const nextCode = state.code;
       if (nextCode !== prevCode) {
@@ -61,13 +55,11 @@ function InterviewPageContent() {
         }));
       }
     });
-
     return () => unsub();
   }, []);
-
+  
   useEffect(() => {
     let prevText = textStore.getState().docJSON;
-
     const unsub = textStore.subscribe((state) => {
       const nextText = state.docJSON;
       if (nextText !== prevText) {
@@ -80,14 +72,13 @@ function InterviewPageContent() {
     });
    return () => unsub();
   }, []);
-
+  
   return (
     <div>
       <div className='flex w-full'>
         <div className='flex-1'>
-          <SessionProvider>
-            <JitsiEmbed />
-          </SessionProvider>
+          {/* Pass session to JitsiEmbed */}
+          <JitsiEmbed session={session} />
           <TextStoreProvider>
             <TextEditor />
           </TextStoreProvider>

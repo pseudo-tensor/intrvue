@@ -7,28 +7,25 @@ import { APPID } from '../../../_globalComponents/config';
 import Loading from '../../../_globalComponents/Loading';
 import Redirecting from './Redirecting';
 
-export default function JitsiEmbed () {
-  const session = useSession();
-  if (session.status == 'unauthenticated') return <Redirecting />
-  if (session.status != 'authenticated') return (<Loading />);
-
+export default function JitsiEmbed({ session }) {
+  if (session.status === 'loading') return <Loading />;
+  if (session.status === 'unauthenticated') return <Redirecting />;
+  
   return (
     <div>
-      <JitsiEmbedContent />
+      <JitsiEmbedContent session={session} />
     </div>
-  );}
+  );
+}
 
-function JitsiEmbedContent () {
-  const session = useSession();
-  const interviewId = useParams<{id: string}>()?.id;
+function JitsiEmbedContent({ session }) {
+
+  const interviewId = useParams()?.id;
   const [token, setToken] = useState('');
-  const [open, setOpen] = useState(false);
-
+  
   const id = session.data?.user.id;
   const name = session.data?.user.name;
   const email = session.data?.user.email;
-  const onOpenModal = () => setOpen(true);
-  const onCloseModal = () => setOpen(false);
 
   useEffect(() => {
     const fetchToken = async () => {
@@ -39,21 +36,18 @@ function JitsiEmbedContent () {
         email: email
       });
       if (!res.success) return;
-      setToken(res.token!);
+      setToken(res.token);
     };
-
     fetchToken();
-  }, []);
-
-  if (session.status == 'loading') return <Loading />
+  }, [id, name, email]);
 
   return (
     <div>
       <JaaSMeeting
-        appId= { APPID }
-        roomName = { interviewId }
-        jwt = { token }
-        configOverwrite = {{
+        appId={APPID}
+        roomName={interviewId}
+        jwt={token}
+        configOverwrite={{
           startWithAudioMuted: true,
           disableModeratorIndicator: true,
           startScreenSharing: true,
@@ -62,20 +56,21 @@ function JitsiEmbedContent () {
           hideConferenceSubject: true,
           toolbarButtons: ['camera', 'microphone', 'settings', 'select-background']
         }}
-        interfaceConfigOverwrite = {{
+        interfaceConfigOverwrite={{
           DISABLE_JOIN_LEAVE_NOTIFICATIONS: true
         }}
-        userInfo = {{
-          displayName: name? name : 'default',
-          email: email? email : 'default@email.com'
+        userInfo={{
+          displayName: name || 'default',
+          email: email || 'default@email.com'
         }}
-        onApiReady = { (externalApi) => {
+        onApiReady={(externalApi) => {
           // here you can attach custom event listeners to the Jitsi Meet External API
           // you can also store it locally to execute commands
-        } }
-        getIFrameRef = { (iframeRef) => { 
+        }}
+        getIFrameRef={(iframeRef) => { 
           iframeRef.style.height = '50vh';
-        }} />
+        }}
+      />
     </div>
-  )
+  );
 }
