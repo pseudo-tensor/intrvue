@@ -3,7 +3,7 @@
   "version": "0.1.0",
   "private": true,
   "scripts": {
-    "build": "pnpm clean && turbo run build --filter=@repo/types && tsup",
+    "build": "pnpm clean && pnpm prisma:generate && tsup",
     "dev": "nodemon",
     "clean": "rimraf dist/*",
     "prisma:migrate:dev": "prisma migrate dev --schema='./src/prisma/schema.prisma' --name",
