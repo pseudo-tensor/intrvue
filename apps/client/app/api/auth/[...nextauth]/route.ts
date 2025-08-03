@@ -14,7 +14,6 @@ declare module "next-auth" {
       id: string; // Add this line to allow id inside session.user
     } & DefaultSession["user"];
   }
-
   interface User extends DefaultUser {
     id: string; // Add this line to allow id inside the user object (for JWT)
   }
@@ -25,6 +24,7 @@ declare module "next-auth/jwt" {
     id?: string; // Add this to allow id inside the JWT
   }
 }
+
 axios.defaults.withCredentials = true;
 
 const base = (process.env.NEXTAUTH_BEURL ?? "http://localhost:8080/api/v1/");
@@ -45,7 +45,6 @@ const tokenSignInProvider = CredentialsProvider({
   id: "token-req",
   name: "Sign In Token",
   credentials: {},
-
   async authorize(credentials, req) {
     let user;
     user = await fetchUserId();
@@ -55,7 +54,6 @@ const tokenSignInProvider = CredentialsProvider({
         id: user.data.userId
       }
     }
-
     user = await refreshAccessToken();
     if (user) {
       return {
@@ -67,41 +65,33 @@ const tokenSignInProvider = CredentialsProvider({
   }
 })
 
-
 const signInProvider = CredentialsProvider({
   id: "sign-in-req",
   name: "Sign In Credentials",
   credentials: userSignInCredentials,
-
   async authorize(credentials, req) {
     const payload = userAuthZodType.safeParse({
       username: credentials?.username,
       password: credentials?.password
     });
     if (!payload.success) throw Error("invalid login details");
-
     const user = await fetchUserIdLegacy(payload.data);
     if (user.status != 200) {
       if (!user.data.enum) throw Error("Backend Issues");
-
       if (user.data.enum == authResponse.BAD_REQUEST) throw Error("Bad Request");
-
       if (user.data.enum == authResponse.USER_NOT_FOUND) {
         // go to signup page
         return null;
       }
-
       if (user.data.enum == authResponse.PASSWORD_INCORRECT) {
         // give warning for wrong password
         return null;
       }
     }
-
     const setCookieHeader = user.headers['set-cookie'];
     if (setCookieHeader) {
       const cookieStore = await cookies()
       const cookieStrings = Array.isArray(setCookieHeader) ? setCookieHeader : [setCookieHeader]
-
       // Extract accessToken
       const accessTokenString = cookieStrings.find(str => str.startsWith('accessToken='))
       if (accessTokenString) {
@@ -115,7 +105,6 @@ const signInProvider = CredentialsProvider({
           })
         }
       }
-
       // Extract refreshToken
       const refreshTokenString = cookieStrings.find(str => str.startsWith('refreshToken='))
       if (refreshTokenString) {
@@ -141,7 +130,6 @@ const signUpProvider = CredentialsProvider({
   id: "sign-up-req",
   name: "Sign Up Credentials",
   credentials: userSignUpCredentials,
-
   async authorize(credentials, req) {
     const payload = userAuthZodType.safeParse({
       username: credentials?.username,
@@ -152,12 +140,10 @@ const signUpProvider = CredentialsProvider({
     if (!payload.success) return null;
       const user = await createUser(payload.data);
       if (user.status != 200) return null; // add some better handling of reseieved enum cases here
-
       const setCookieHeader = user.headers['set-cookie'];
       if (setCookieHeader) {
         const cookieStore = await cookies()
         const cookieStrings = Array.isArray(setCookieHeader) ? setCookieHeader : [setCookieHeader]
-
         // Extract accessToken
         const accessTokenString = cookieStrings.find(str => str.startsWith('accessToken='))
         if (accessTokenString) {
@@ -170,7 +156,6 @@ const signUpProvider = CredentialsProvider({
             })
           }
         }
-
         // Extract refreshToken
         const refreshTokenString = cookieStrings.find(str => str.startsWith('refreshToken='))
         if (refreshTokenString) {
@@ -192,6 +177,11 @@ const signUpProvider = CredentialsProvider({
 })
 
 const nextAuthOptions = {
+  secret: process.env.NEXTAUTH_SECRET,
+  session: {
+    strategy: "jwt" as const,
+    maxAge: 24 * 60 * 60,
+  },
   providers: [
     tokenSignInProvider,
     signInProvider,
