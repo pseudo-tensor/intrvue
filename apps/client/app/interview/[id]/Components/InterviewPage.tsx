@@ -6,7 +6,6 @@ import { CodeStoreProvider } from '@repo/store/providers/codeStoreProvider';
 import { TextStoreProvider } from '@repo/store/providers/textStoreProvider';
 import { SessionProvider, useSession } from 'next-auth/react';
 import JitsiEmbed from './JitsiEmbed';
-import Redirecting from './Redirecting';
 import Loading from '../../../_globalComponents/Loading';
 import { codeStore } from '@repo/store/stores/codeStore'
 import { useState, useEffect } from 'react';
@@ -19,8 +18,20 @@ import Redirecting from './Redirecting';
 
 export default function InterviewPage() {
   const session = useSession();
-  if (session.status == 'unauthenticated') return (<Redirecting />);
-  if (session.status != 'authenticated') return (<Loading />);
+  if (session.status == 'loading') {
+    return (
+      <div>
+        <Loading />
+      </div>
+    )
+  }
+  if (session.status == 'unauthenticated') {
+    return (
+      <div>
+        <Redirecting />
+      </div>
+    )
+  }
 
   return (
     <div>
@@ -69,21 +80,6 @@ function InterviewPageContent() {
     });
    return () => unsub();
   }, []);
-
-  if (session.status == 'loading') {
-    return (
-      <div>
-        <Loading />
-      </div>
-    )
-  }
-  if (session.status == 'unauthenticated') {
-    return (
-      <div>
-        <Redirecting />
-      </div>
-    )
-  }
 
   return (
     <div>
