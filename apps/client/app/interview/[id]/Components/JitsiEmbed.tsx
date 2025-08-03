@@ -20,7 +20,7 @@ export default function JitsiEmbed({ session } : {session : any}) {
 
 function JitsiEmbedContent({ session } : {session : any}) {
 
-  const interviewId = useParams()?.id;
+  const interviewId = useParams<{id: string}>()?.id;
   const [token, setToken] = useState('');
   
   const id = session.data?.user.id;
@@ -36,7 +36,7 @@ function JitsiEmbedContent({ session } : {session : any}) {
         email: email
       });
       if (!res.success) return;
-      setToken(res.token);
+      setToken(res.token!);
     };
     fetchToken();
   }, [id, name, email]);
