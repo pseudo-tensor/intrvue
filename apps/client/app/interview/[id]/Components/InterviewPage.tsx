@@ -15,9 +15,11 @@ import { textStore } from '@repo/store/stores/textStore';
 // import { getInterviewDetails } from '../../../api/interview/route';
 // import { useInterviewStore } from '@repo/store/providers/interviewStoreProvider';
 import { useRouter } from 'next/navigation';
+import Redirecting from './Redirecting';
 
 export default function InterviewPage() {
   const session = useSession();
+  if (session.status == 'unauthenticated') return (<Redirecting />);
   if (session.status != 'authenticated') return (<Loading />);
 
   return (

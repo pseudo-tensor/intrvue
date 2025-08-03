@@ -5,9 +5,11 @@ import { useSession } from 'next-auth/react';
 import { useParams } from 'next/navigation';
 import { APPID } from '../../../_globalComponents/config';
 import Loading from '../../../_globalComponents/Loading';
+import Redirecting from './Redirecting';
 
 export default function JitsiEmbed () {
   const session = useSession();
+  if (session.status == 'unauthenticated') return <Redirecting />
   if (session.status != 'authenticated') return (<Loading />);
 
   return (
